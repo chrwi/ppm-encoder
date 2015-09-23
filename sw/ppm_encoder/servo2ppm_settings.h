@@ -1,12 +1,12 @@
 
 /*********************************************************************************************************
  Title  :   header file for the rc ppm encoder (servo2ppm_settings.h)
- Author:    Chris Efstathiou 
+ Author:    Chris Efstathiou
  E-mail:    hendrix at vivodinet dot gr
  Homepage:  ........................
  Date:      6/Feb/2010
  Compiler:  AVR-GCC with AVR-AS
- MCU type:  ATmega168 
+ MCU type:  ATmega168
  Comments:  This software is FREE. Use it at your own risk.
 *********************************************************************************************************/
 
@@ -22,7 +22,7 @@ is not defined in the makefile.
 */
 
 #ifndef F_CPU
-#define F_CPU                         8000000UL        /* CPU CLOCK FREQUENCY */
+#define F_CPU                         16000000UL        /* CPU CLOCK FREQUENCY */
 #endif
 /*
 Those values are the failsafe servo values and the values for the non used channels
@@ -30,14 +30,14 @@ If for example you leave unconnected channel 7, the servo pulse of channel 7 in 
 will be the failsafe value set below as "RC_FAILSAFE_CHANNEL_7" thus 1000 microseconds.
 */
 
-#define RC_FAILSAFE_CHANNEL_1         1500UL
-#define RC_FAILSAFE_CHANNEL_2         1500UL
-#define RC_FAILSAFE_CHANNEL_3         1000UL
-#define RC_FAILSAFE_CHANNEL_4         1500UL
-#define RC_FAILSAFE_CHANNEL_5         1000UL
-#define RC_FAILSAFE_CHANNEL_6         1000UL
-#define RC_FAILSAFE_CHANNEL_7         1000UL
-#define RC_FAILSAFE_CHANNEL_8         1000UL
+#define RC_FAILSAFE_CHANNEL_1         900UL
+#define RC_FAILSAFE_CHANNEL_2         900UL
+#define RC_FAILSAFE_CHANNEL_3         900UL
+#define RC_FAILSAFE_CHANNEL_4         900UL
+#define RC_FAILSAFE_CHANNEL_5         900UL
+#define RC_FAILSAFE_CHANNEL_6         900UL
+#define RC_FAILSAFE_CHANNEL_7         900UL
+#define RC_FAILSAFE_CHANNEL_8         900UL
 
 /*
 When signal is lost 1= ppm waveform remain on with failsafe values, 0= ppm waveform is off
@@ -56,7 +56,7 @@ RC_USE_FAILSAFE set to 0 means that the ppm output will be shut down and if you 
 RC_USE_FAILSAFE  to 1 the ppm output will NOT shut down but it will now output the failsafe values
 defined above.
 */
-#define RC_USE_FAILSAFE               0
+#define RC_USE_FAILSAFE               1
 
 /*
 The channel number (1,2,3...7,8) that will be used as a receiver ready indicator.
@@ -101,7 +101,7 @@ exactly what you are doing.
 */
 #define RC_CONSTANT_PPM_FRAME_TIME    0
 
-#define RC_PPM_GEN_CHANNELS           8       /* How many channels the PPM output frame will have. */
+#define RC_PPM_GEN_CHANNELS           6       /* How many channels the PPM output frame will have. */
 #define RC_SERVO_MIN_PW               800UL   /* in microseconds */
 #define RC_SERVO_CENTER_PW            1500UL  /* in microseconds */
 #define RC_SERVO_MAX_PW               2200UL  /* in microseconds */

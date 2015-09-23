@@ -1,7 +1,7 @@
 
 /*********************************************************************************************************
  Title  :   C  file for the bootloader (x_modem_bootloader_v3_2.c)
- Author:    Chris Efstathiou 
+ Author:    Chris Efstathiou
  E-mail:    hendrix  at vivodinet dot gr
  Homepage:  ........................
  Date:      21/Apr/2009
@@ -11,14 +11,14 @@
 *********************************************************************************************************/
 /*                                           COMMENTS                                                   */
 /********************************************************************************************************/
-/* 
+/*
 The whole project is based around the ATMEL AVR processor and specifically the ATMEGA168.
 Please use the above mentioned processor otherwise you may need to change/modify the source files of the project.
 I have tested the bootloader with other processors and it worked well right out of the box but i can't guarrantee anything.
 
 I prefer the grounded pin activation because with the "C" character method the UART must be initialized
 every time during boot up within the bootloader code and that means that the Txd UART pin will be set as an
-output and if the pin is used as an input during normal operation and something is connected to that pin 
+output and if the pin is used as an input during normal operation and something is connected to that pin
 it will be driving it thinking that it is an input!!!
 Obviously this is not good for the health of the AVR device so i use the grounded pin activation
 which allows me to first disconnect any plugs attached to the cirquit, flash it and reconnect the plugs.
@@ -33,7 +33,7 @@ This makefile can also be used for your applications because it directly outputs
 In order to use the supplied bootloader makefile with your applications, set the bootloader start address to 0,
 edit the  file names to match your project files and then type "make bin" in order to produce the *.bin file
 needed by this bootloader. There are two files generated this way the
-<application name>.bin file (the hex file converted to binary) 
+<application name>.bin file (the hex file converted to binary)
 and the <application name>.eep_bin eeprom binary file (the *.eep file converted to binary).
 Using X modem the uploaded files must be in binary form for both the flash and the Eeprom.
 Always the file that ends up in the avr's flash and eeprom memory are in binary format, the flashing program
@@ -42,23 +42,23 @@ usually converts the *.hex file to the required binary format automatically.
 If you use the bootloader make sure that you check the fuses that are needed for proper operation.
 1) BOOTRST, 2)BOOTSZ0, 3)BOOTSZ1.
 Those 3 fuses tell the cpu to move the reset vector to the bootloader address and to reserve
-all 2048, 1024 or 512 bytes of bootloader memory space. 
+all 2048, 1024 or 512 bytes of bootloader memory space.
 
 You will  need a 3.3v or 5v FTDI cable (USB to SERIAL TTL) in order to use the Xmodem bootloader.
-Use the FTDI cable for connecting the board to be programmed with the PC. 
+Use the FTDI cable for connecting the board to be programmed with the PC.
 BEFORE ENTERING THE BOOTLOADER DISCONNECT EVERYTHING FROM THE BOARD TO BE PROGRAMMED !!!
 After making sure that everything is disconnected from the board to be programmed
 including power place a jumper over the pins that activate the bootloader.
 The +5 volts that will power the board can come from the FTDI cable's +5 volts (Vcc)
-but make sure that the board does not draw more than 50 mA of current. 
-Make a cable that will connect the FTDI's Txd, Rxd, 5V and Ground to the board's Rxd, Txd, 5v input and Ground repectively. 
+but make sure that the board does not draw more than 50 mA of current.
+Make a cable that will connect the FTDI's Txd, Rxd, 5V and Ground to the board's Rxd, Txd, 5v input and Ground repectively.
 
-In order to upload the file needed, reset the board by power cycling it making sure that the 
+In order to upload the file needed, reset the board by power cycling it making sure that the
 connection with the terminal program like "HyperTerminal is already opened and connected
 at  9600 bps 8 bits, no parity, 1 stop bit, no flow control and carriage return (CR) as terminator of the line.
 When you hit the "enter" key is the same as adding "CR" as the line terminator.
 In Hypertermina you don't need to add "CR" because every key you press, immediately is transmitted to the bootloader
-unlike some other terminal programs like "cutecom" that wait until you hit "ENTER" 
+unlike some other terminal programs like "cutecom" that wait until you hit "ENTER"
 in order to send everything you have typed so far and add the "CR" terminator at the end of the string.
 After power cycling (reset) the board you should see the prompt "ATWF=write flash >" prompt on your screen.
 Type "ATWF" using capital or small or mixed letters and hit enter.
@@ -67,11 +67,11 @@ the X modem crc transfer from your terminal program.
 Select the Xmodem type of file transfer, then select the file to be uploaded ("xxxxxxxxx.bin")
 and click the send button or whatever your terminal program uses.
 Be carefull "Xmodem 1K" IS NOT THE SAME!!!
-Usually “Xmodem CRC” is referred as plain "Xmodem".  
+Usually “Xmodem CRC” is referred as plain "Xmodem".
 
 Then the transfer window of your program will show up telling you the transfer progress and after the transfer
 is hopefully complete and succesfull the window will automatically close and you will
-see the message “update successful” at the terminal 's screen. 
+see the message “update successful” at the terminal 's screen.
 The bootloader commands are:
 ATWF = write flash.
 ATWE = write Eeprom.
@@ -89,8 +89,8 @@ If you attempt to modify the boot lock fuses you need to issue a command like th
 ATWB11111011 + ENTER
 Then a prompt will appear asking for confirmation "Y/N"
 If you hit "Y" the BLB02 fuse will be programmed, any other key will abort programming.
-I didn't found setting the lockbits usefull as the bootloader code protect the bootloader's space from 
-overwritting it during the firmware upload and protecting the program area from writting it again 
+I didn't found setting the lockbits usefull as the bootloader code protect the bootloader's space from
+overwritting it during the firmware upload and protecting the program area from writting it again
 cancells the usefuleness of the bootloader i think.
 Read carefully the below part from the mega168 datasheet:
 
@@ -105,25 +105,25 @@ Bit  7        6         5        4       3        2        1        0
 R0   1        1      BLB12     BLB11   BLB02    BLB01     LB2      LB1
 
 Now give the command ATWLxxxxxxxx and press enter. The xxxxxxxx are the binary presentation of lockbits
-7,6,5,4,3,2,1 and 0 
+7,6,5,4,3,2,1 and 0
 If you give the command ATWB11110111 the boot lock bit 3 will be programmed (BLB02)
-so 
+so
 If bits 5..0 in R0 are cleared (zero), the corresponding Boot Lock bit and general lock bit will be
 programmed.
-Be careful with the boot lock bits. 
+Be careful with the boot lock bits.
 
 Below are two tables with the functionality of the boot lock bits of the ATMEGA168.
 
                Boot Lock Bit0 Protection Modes (Application Section)(1)
 Table 26-2.
 BLB0 Mode      BLB02     BLB01     Protection
-                                     
-     1            1         1      No restrictions for SPM or LPM accessing the Application 
+
+     1            1         1      No restrictions for SPM or LPM accessing the Application
                                    section.
 
      2            1         0      SPM is not allowed to write to the Application section.
-                                   
-                                   
+
+
      3            0         0      SPM is not allowed to write to the Application section, and LPM
                                    executing from the Boot Loader section is not allowed to read
                                    from the Application section. If Interrupt Vectors are placed in
@@ -140,12 +140,12 @@ Note:   1. “1” means unprogrammed, “0” means programmed
                Boot Lock Bit1 Protection Modes (Boot Loader Section)(1)
 Table 26-3.
 BLB1 Mode      BLB12     BLB11     Protection
-                                   
+
      1            1         1      No restrictions for SPM or LPM accessing the Boot Loader
                                    section.
 
      2            1         0      SPM is not allowed to write to the Boot Loader section.
-                                
+
      3            0         0      SPM is not allowed to write to the Boot Loader section, and LPM
                                    executing from the Application section is not allowed to read
                                    from the Boot Loader section. If Interrupt Vectors are placed in
@@ -183,7 +183,7 @@ Chris
 /*                                        USER CONFIGURATION                                            */
 /********************************************************************************************************/
 #ifndef F_CPU
-#define F_CPU                             8000000UL //system clock(Hz)
+#define F_CPU                             16000000UL //system clock(Hz)
 #endif
 #define BAUDRATE                          9600UL    //UART baudrate, i have tested it up to 115200 bps
 #define SERIAL_PORT_NUMBER                0         //UART that will be used, 0,1 or 2 etc.
@@ -201,26 +201,26 @@ Chris
 //FUNCTION ENABLE / DISABLE
 #define BOOTLOCK_BIT_SET_SUPPORT          1         //1= use bootlock bit write capability, 0= don't use (smaller code).
 #define BOOTLOCK_BIT_READ_SUPPORT         1         //1= use bootlock bit read capability, 0= don't use (smaller code).
-#define VERSION_INFO_NEEDED               1         //1= use application version read capability, 0=don't use (smaller code). 
-#define BOOTLOADER_SAVE_CODE_SIZE         0         //1= omit some non critical code, 0=don't save (larger code size). 
-/* 
+#define VERSION_INFO_NEEDED               1         //1= use application version read capability, 0=don't use (smaller code).
+#define BOOTLOADER_SAVE_CODE_SIZE         0         //1= omit some non critical code, 0=don't save (larger code size).
+/*
 ABSOLUTELY minimum code configuration. All above definitions will be auto adjusted for minimum code space
 but of course the bare minimum functionality will be available (only uploading of flash and eeprom files).
-*/   
-#define BOOTLOADER_ABSOLUTELY_MIN_CODE    0         
+*/
+#define BOOTLOADER_ABSOLUTELY_MIN_CODE    0
 
 // The X modem standard needs a 3 second timeout but those days with the power of the modern PC 1 second is enough.
 //time to wait for a character to be received in milliseconds.
-#define UART_RX_TIMEOUT                   500       
+#define UART_RX_TIMEOUT                   500
 
 // How many attempts to make for X modem transfer (time= XMODEM_START_ATTEMPTS * UART_RX_TIMEOUT_MAX)
-#define XMODEM_START_ATTEMPTS             15  
+#define XMODEM_START_ATTEMPTS             15
 
 // Put any extra commands to be executed. Those commands will be executed first.
 #define EXTRA_STARTUP_COMMANDS()          { }
 
 // Put any extra commands to be executed. Those commands will be executed just before exit.
-#define EXTRA_EXIT_COMMANDS()             { }      
+#define EXTRA_EXIT_COMMANDS()             { }
 
 //Bootloader messages
 const char success_message[]   = "OK";
@@ -229,10 +229,10 @@ const char update_success_message[] = "update successful";
 const char prompt[] = "(ATWF=write flash)>";
 
 #ifndef SPM_PAGESIZE
-#error "SPM_PAGESIZE" not defined, add #define SPM_PAGESIZE XXX to the "bootloader.c" file 
+#error "SPM_PAGESIZE" not defined, add #define SPM_PAGESIZE XXX to the "bootloader.c" file
 #endif
 //#define SPM_PAGESIZE   XXX
- 
+
 //certain versions of the gcc avr compiler are missing the "FLASHEND" definition
 #ifndef FLASHEND
 #error "FLASHEND" not defined please add #define FLASHEND XXX to the "bootloader.c" file
@@ -248,25 +248,25 @@ const char prompt[] = "(ATWF=write flash)>";
 /********************************************************************************************************/
 
 #if BOOTLOADER_ABSOLUTELY_MIN_CODE == 1
-#undef USE_LED_INDICATION  
-#define USE_LED_INDICATION           0 
+#undef USE_LED_INDICATION
+#define USE_LED_INDICATION           0
 #undef VERSION_INFO_NEEDED
 #define VERSION_INFO_NEEDED          0
 #undef BOOTLOCK_BIT_SET_SUPPORT
 #define BOOTLOCK_BIT_SET_SUPPORT     0
 #undef BOOTLOCK_BIT_READ_SUPPORT
 #define BOOTLOCK_BIT_READ_SUPPORT    0
-#undef BOOTLOADER_SAVE_CODE_SIZE 
+#undef BOOTLOADER_SAVE_CODE_SIZE
 #define BOOTLOADER_SAVE_CODE_SIZE    1
-#endif 
+#endif
 
 //certain versions of the gcc avr compiler are missing the "SPM_PAGESIZE" definition
 #ifndef SPM_PAGESIZE
-#warning "SPM_PAGESIZE" not defined, "SPM_PAGESIZE" set to 128 
+#warning "SPM_PAGESIZE" not defined, "SPM_PAGESIZE" set to 128
 #define SPM_PAGESIZE             128
 #endif
 
-#define X_MODEM_PACKET_LENGTH    128  
+#define X_MODEM_PACKET_LENGTH    128
 
 #if SPM_PAGESIZE >= X_MODEM_PACKET_LENGTH
 
@@ -274,13 +274,13 @@ const char prompt[] = "(ATWF=write flash)>";
 #error SPM_PAGESIZE is not an exact multiple of X_MODEM_PACKET_LENGTH
 #endif
 
-#elif X_MODEM_PACKET_LENGTH > SPM_PAGESIZE 
+#elif X_MODEM_PACKET_LENGTH > SPM_PAGESIZE
 
 #if ((X_MODEM_PACKET_LENGTH / SPM_PAGESIZE)* SPM_PAGESIZE) != X_MODEM_PACKET_LENGTH
 #error X_MODEM_PACKET_LENGTH is not an exact multiple of SPM_PAGESIZE
 #endif
 
-#endif 
+#endif
 
 //calculate baudrate register
 #define BAUDREG            ((unsigned int)((F_CPU * 10) / (16UL * BAUDRATE) - 5) / 10)
@@ -293,11 +293,11 @@ const char prompt[] = "(ATWF=write flash)>";
 
 // Alternative baudrate error calculation.
 /*
-#define UART_BAUDRATE_ACCURATE   (F_CPU/(BAUDRATE/100))  
+#define UART_BAUDRATE_ACCURATE   (F_CPU/(BAUDRATE/100))
 #define UART_BAUDRATE_REAL       (((F_CPU/BAUDRATE)/16)*16)
 #if  ((UART_BAUDRATE_ACCURATE/UART_BAUDRATE_REAL)-100) > 2
 #error "UART_BAUDRATE_ERROR_TOO_HIGH! Change baud rate"
-#endif 
+#endif
 */
 
 //internal use macro
@@ -379,9 +379,9 @@ const char prompt[] = "(ATWF=write flash)>";
 #define UART_TIMEOUT_1S_VALUE       ( F_CPU  / ((1024UL * 1000) / 1000) )
 #define UART_TIMEOUT_ENABLE()       { OCR1A  = UART_TIMEOUT_200MS_VALUE; TCCR1B = (1 << WGM12)|(1 << CS12)|(1 << CS10); }
 #define UART_TIMEOUT_DISABLE()      { TCCR1B = 0; }
-#define UART_TIMEOUT_DEFAULT()      { OCR1A  = UART_TIMEOUT_VALUE; } 
-#define UART_TIMEOUT_1S()           { OCR1A  = UART_TIMEOUT_1S_VALUE; } 
-#define UART_TIMEOUT_200MS()        { OCR1A  = UART_TIMEOUT_200MS_VALUE; }  
+#define UART_TIMEOUT_DEFAULT()      { OCR1A  = UART_TIMEOUT_VALUE; }
+#define UART_TIMEOUT_1S()           { OCR1A  = UART_TIMEOUT_1S_VALUE; }
+#define UART_TIMEOUT_200MS()        { OCR1A  = UART_TIMEOUT_200MS_VALUE; }
 
 #else
 
@@ -391,9 +391,9 @@ const char prompt[] = "(ATWF=write flash)>";
 #define UART_TIMEOUT_1S_VALUE       ( (F_CPU  / 11000) * 1000 )
 #define UART_TIMEOUT_ENABLE()       { uart_rx_timeout = UART_TIMEOUT_VALUE; }
 #define UART_TIMEOUT_DISABLE()      { uart_rx_timeout = UART_NO_TIMEOUT_VALUE; }
-#define UART_TIMEOUT_DEFAULT()      { uart_rx_timeout = UART_TIMEOUT_VALUE; } 
-#define UART_TIMEOUT_1S()           { uart_rx_timeout = UART_TIMEOUT_1S_VALUE; } 
-#define UART_TIMEOUT_200MS()        { uart_rx_timeout = UART_TIMEOUT_200MS_VALUE; }  
+#define UART_TIMEOUT_DEFAULT()      { uart_rx_timeout = UART_TIMEOUT_VALUE; }
+#define UART_TIMEOUT_1S()           { uart_rx_timeout = UART_TIMEOUT_1S_VALUE; }
+#define UART_TIMEOUT_200MS()        { uart_rx_timeout = UART_TIMEOUT_200MS_VALUE; }
 
 #endif
 
@@ -417,7 +417,7 @@ const char prompt[] = "(ATWF=write flash)>";
 
 #define DISABLE_LEVEL_PIN()  { PORT_REG(CHECK_LEVEL_PORT) &= (~(1 << CHECK_LEVEL_PIN)); }
 
-    
+
 
 /******************************************************************************************************/
 /*                                       FUNCTION PROTOTYPES                                          */
@@ -473,12 +473,12 @@ volatile unsigned char memory_to_write = 0;
 
 /*1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111*/
 
-//send a byte to serial 
+//send a byte to serial
 __attribute__((__noinline__)) void sput_char(unsigned char data)
 {
 /*
 The UDREn Flag indicates if the transmit buffer (UDRn) is ready to receive new data. If UDREn
-is one, the buffer is empty, and therefore ready to be written. 
+is one, the buffer is empty, and therefore ready to be written.
 */
 
 while( (_UCSRA_ & (1<<_UDRE_)) == 0) ;
@@ -531,8 +531,8 @@ return(_UDR_);
 void sput_str(const char *str)
 {
 
-sput_char('\r'); 
-sput_char('\n'); 
+sput_char('\r');
+sput_char('\n');
 while(*str){ sput_char(*str++); }
 
 
@@ -547,7 +547,7 @@ void receive_at_command(void)
 
 unsigned char received_bytes = 0;
 unsigned char rx_char_buffer = 0;
-unsigned char x = 0; 
+unsigned char x = 0;
 #if defined BOOTLOCK_BIT_SET_SUPPORT && BOOTLOCK_BIT_SET_SUPPORT == 1
 unsigned char blb = 0;
 unsigned char lock_bits = 0;
@@ -558,77 +558,77 @@ unsigned int eep_address = 0;
 
 while(memory_to_write == 0)
     {
-      x=_UDR_;  
+      x=_UDR_;
       x=_UDR_;
       sput_str(prompt);
        do{
-             received_bytes = 0; 
+             received_bytes = 0;
              //uart_rx_timeout = UART_TIMEOUT_ABS_MAX_VALUE;
              rx_char_buffer = sget_char();
              if(rx_char_buffer){ sput_char(rx_char_buffer); }
-          
+
              if( rx_char_buffer == 'A' || rx_char_buffer == 'a' )
                {
                   rx_char_buffer = sget_char();
                   if(rx_char_buffer){ sput_char(rx_char_buffer); }
                   if( rx_char_buffer == 'T' || rx_char_buffer == 't' )
-                   { 
+                   {
                       while(1)
-                          { 
+                          {
                              rx_char_buffer = sget_char();
                              sput_char(rx_char_buffer);
                              if(received_bytes > 10 )
                               {
-                                received_bytes = 0xff; 
+                                received_bytes = 0xff;
                                 sput_str(error_message);
                                 break;
-                              } 
+                              }
                              if(rx_char_buffer == '\r' || rx_char_buffer == '\n')
                               {
-                                 x_buffer[received_bytes] = '\0'; 
+                                 x_buffer[received_bytes] = '\0';
                                  break;
                               }
-                             x_buffer[received_bytes++] = rx_char_buffer;   
+                             x_buffer[received_bytes++] = rx_char_buffer;
                              if(rx_char_buffer == 0) { received_bytes = 0; break; }
                           }
                    }
 
-               }else if( rx_char_buffer == '\n' || rx_char_buffer == '\r' ) { sput_str(prompt); } 
-              
+               }else if( rx_char_buffer == '\n' || rx_char_buffer == '\r' ) { sput_str(prompt); }
+
            }while(received_bytes == 0 ); // end of "while(1)" loop
 
-       if(received_bytes == 0Xff){ continue; } 
+       if(received_bytes == 0Xff){ continue; }
        strupr((char*)x_buffer);
        memory_to_write = 0;
        switch(x_buffer[0])
-            {    
+            {
                case('W'):  switch(x_buffer[1])
                                 {
-                                   case('F'):  memory_to_write = 1;  break; 
-                                   case('E'):  memory_to_write = 2;  break; 
+                                   case('F'):  memory_to_write = 1;  break;
+                                   case('E'):  memory_to_write = 2;  break;
 #if defined BOOTLOCK_BIT_SET_SUPPORT && BOOTLOCK_BIT_SET_SUPPORT == 1
                                    case('B'):  blb = 7; lock_bits = 0xFF;
                                                for(x=2; x<=9; x++)
                                                  {
-                                                     rx_char_buffer = x_buffer[x]; 
+                                                     rx_char_buffer = x_buffer[x];
                                                      if(rx_char_buffer == '0'){ lock_bits &= (~(1<<blb)); }
                                                      blb--;
-                                                 } 
+                                                 }
                                                x_buffer[10] = '\0';
                                                utoa(lock_bits,(char*)x_buffer, 2);
                                                sput_str((char*)x_buffer);
                                                sput_str("Y/N");
-                                               rx_char_buffer = sget_char(); 
+                                               rx_char_buffer = sget_char();
                                                if(rx_char_buffer == 'Y' || rx_char_buffer == 'y')
                                                 {
                                                    boot_lock_bits_set(~lock_bits);
                                                    sput_str(success_message);
                                                 }else{ sput_str("Aborted");  }
                                                break;
-#endif                                             
-                                   default  :  sput_str(error_message); break;  
+#endif
+                                   default  :  sput_str(error_message); break;
                                 }
-                           break;  
+                           break;
 
 #if defined BOOTLOCK_BIT_READ_SUPPORT && BOOTLOCK_BIT_READ_SUPPORT == 1
               case('R'):  switch(x_buffer[1])
@@ -652,11 +652,11 @@ while(memory_to_write == 0)
                                   default  : sput_str(error_message); break;
 
                                }
-                           
-                           break; 
-   
-#endif //END of #if defined BOOTLOCK_BIT_READ_SUPPORT && BOOTLOCK_BIT_READ_SUPPORT == 1            
-              case('I'):   
+
+                           break;
+
+#endif //END of #if defined BOOTLOCK_BIT_READ_SUPPORT && BOOTLOCK_BIT_READ_SUPPORT == 1
+              case('I'):
 #if defined VERSION_INFO_NEEDED && VERSION_INFO_NEEDED == 1
                            sput_char('\r'); sput_char('\n');
                            eep_address = (E2END - 31);
@@ -664,15 +664,15 @@ while(memory_to_write == 0)
                                {
                                   x = eeprom_read_byte((unsigned char*)eep_address++);
                                   if(x < 0xff && x > 0){ sput_char(x); }
-                               } 
+                               }
 #endif
                            sput_str("BootLoader V3.2\r\nChris Efstathiou 2009");
                            break;
 
               default  :   sput_str(error_message);
                            break;
-    
-            } 
+
+            }
 
     }//end of "while(memory_to_write == 0)" loop.
 
@@ -702,7 +702,7 @@ unsigned int received_bytes = 0, address_buffer = 0, eeprom_address = 0, crc16 =
 
 EXTRA_STARTUP_COMMANDS();
 ENABLE_LEVEL_PIN();
-UART_TIMEOUT_ENABLE(); 
+UART_TIMEOUT_ENABLE();
 sget_char(); // Dummy receive used as a 200 ms delay as the UART is not yet enabled.
 if( ((PIN_REG(CHECK_LEVEL_PORT) & (1 << CHECK_LEVEL_PIN))) ){ EXTRA_EXIT_COMMANDS(); asm("jmp 0x0000"); }
 
@@ -714,8 +714,8 @@ _UCSRB_ = ( (1 << _RXEN_)|(1 << _TXEN_) );
 // Set UART to receive and transmit 8 bits per character, 1 stop bit with no parity.
 _UCSRC_ = ( USEURSEL | (1 << _UCSZ1_) | (1 << _UCSZ0_) );
 // Set baudrate.
-_UBRRH_ = BAUDREG/256; 
-_UBRRL_ = BAUDREG%256; 
+_UBRRH_ = BAUDREG/256;
+_UBRRL_ = BAUDREG%256;
 // Turn on the pull up resistor of the UART rx pin.
 DDR_REG(UART_PORT) &= (~(1<<UART_RX_PIN));
 PORT_REG(UART_PORT) |= (1<<UART_RX_PIN);
@@ -729,8 +729,8 @@ sget_char();
 /* MAIN BOOTLOADER LOOP */
 while(1)
     {
-       // START THE STANDARD 128 BYTE PACKET X MODEM CRC FILE DOWNLOAD    
-       // I tried to follow the crc X modem protocol as faithfully as i could   
+       // START THE STANDARD 128 BYTE PACKET X MODEM CRC FILE DOWNLOAD
+       // I tried to follow the crc X modem protocol as faithfully as i could
        LED_ON();
        flash_address = 0;
        eeprom_address = 0;
@@ -748,15 +748,15 @@ while(1)
             sput_char(XMODEM_NCG);
          }while(sget_char() != XMODEM_SOH);
 
-       // DOWNLOAD AND VERIFY ONE PACKET AT A TIME UNTILL THE BUFFER IS FULL. The buffer is equal to SPM_PAGESIZE.  
+       // DOWNLOAD AND VERIFY ONE PACKET AT A TIME UNTILL THE BUFFER IS FULL. The buffer is equal to SPM_PAGESIZE.
        /*------------------------------------------------------------------------------------------------------*/
        do{
            crc16 = 0;
-#if BOOTLOADER_SAVE_CODE_SIZE == 1 
+#if BOOTLOADER_SAVE_CODE_SIZE == 1
            sget_char();
            sget_char();
 #elif BOOTLOADER_SAVE_CODE_SIZE == 0
-           packet_number++; 
+           packet_number++;
            packet_resend_required = 0;
            high_byte_buffer =  sget_char();     //get X modem packet number
            low_byte_buffer  =  sget_char();
@@ -778,12 +778,12 @@ while(1)
                      crc16 = crc_buffer;
                   }
                 received_bytes++;
-             }  
+             }
            high_byte_buffer = sget_char();         //get X modem CRC16
            low_byte_buffer  = sget_char();
 #if BOOTLOADER_SAVE_CODE_SIZE == 0
            if( (high_byte_buffer != (crc16 / 256))||(low_byte_buffer != (crc16 % 256)) ){ packet_resend_required |= (1<<3); }
-           // Now we must see if the packet was received ok or if not, what went wrong.   
+           // Now we must see if the packet was received ok or if not, what went wrong.
            if(packet_resend_required > 0)
             {
                error_counter++;
@@ -803,8 +803,8 @@ while(1)
 #elif BOOTLOADER_SAVE_CODE_SIZE == 1
            if( (high_byte_buffer != (crc16 / 256))||(low_byte_buffer != (crc16 % 256)) )
             {
-               goto XMODEM_FAILED; 
-            
+               goto XMODEM_FAILED;
+
 #endif
             }else{  // "if(packet_resend_required > 0)" statement.
                    if(memory_to_write == 1)
@@ -819,7 +819,7 @@ while(1)
                                   do{
                                        boot_page_fill_safe( y, x_buffer[x] | (x_buffer[x+1] << 8) );
                                        x+=2; //BYTE COUNTER UP TO "received_bytes"
-                                       y+=2; //BYTE COUNTER UP TO SPM_PAGESIZE 
+                                       y+=2; //BYTE COUNTER UP TO SPM_PAGESIZE
                                     }while(y < SPM_PAGESIZE);
                                   boot_page_erase_safe(flash_address);      //erase one Flash page
                                   boot_page_write_safe(flash_address);      //write buffer to one Flash page
@@ -829,7 +829,7 @@ while(1)
                                       if( pgm_read_byte(flash_address+y) != x_buffer[address_buffer+y] ){ goto XMODEM_FAILED; }
                                       y++;
                                     }while(y < SPM_PAGESIZE);
-                                  flash_address += SPM_PAGESIZE; 
+                                  flash_address += SPM_PAGESIZE;
                                   received_bytes -= SPM_PAGESIZE;
 
                                }else{ memory_full = 1; goto XMODEM_FAILED; }
@@ -838,9 +838,9 @@ while(1)
                     }else if(memory_to_write == 2)
                            {
                              for(x=0; x < X_MODEM_PACKET_LENGTH; x++)
-                               { 
+                               {
                                   if(eeprom_address <= E2END)
-                                   { 
+                                   {
                                       eeprom_write_byte((unsigned char*)eeprom_address, x_buffer[x]);
                                       if(eeprom_read_byte((unsigned char*)eeprom_address) != x_buffer[x]){ goto XMODEM_FAILED; }
                                       eeprom_address++;
@@ -851,18 +851,18 @@ while(1)
                            }
                    sput_char(XMODEM_ACK);
                    //error_counter =0;
-                 }// end of "if(packet_resend_required > 0){...}else{...}" statement  
+                 }// end of "if(packet_resend_required > 0){...}else{...}" statement
 
            if(error_counter >= 10){ goto XMODEM_FAILED; }  //Standard X modem max errors is 10, abort update.
 
-         }while(sget_char() != XMODEM_EOT); // End of do{}while loop 
+         }while(sget_char() != XMODEM_EOT); // End of do{}while loop
 /*----------------------------------------------------------------------------------------------------------*/
        // The flash or Eeprom is written so it is time to exit.
        // exit the X modem transfer.
        sput_char(XMODEM_NAK);
        if(sget_char() == XMODEM_EOT)
-        { 
-           sput_char(XMODEM_ACK); 
+        {
+           sput_char(XMODEM_ACK);
            error_counter = 0;
         }
        else{
@@ -875,7 +875,7 @@ XMODEM_FAILED:
 
                  }while( y<10);
                error_counter = 1;
-              
+
            }
 
        _UCSRB_ &= (~ (1 << _RXEN_));
@@ -893,7 +893,7 @@ XMODEM_FAILED:
                }else{
                        sput_str(update_success_message);
                     }
-       //(*((void(*)(void))(BOOTLOADER_MEM_START)))(); 
+       //(*((void(*)(void))(BOOTLOADER_MEM_START)))();
 
     } // END of while(1) main loop.
 
